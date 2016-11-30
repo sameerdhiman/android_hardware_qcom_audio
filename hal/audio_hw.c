@@ -26,6 +26,8 @@
 #define ALOGVV(a...) do { } while(0)
 #endif
 
+#include <stdio.h>
+#include <fcntl.h>
 #include <errno.h>
 #include <pthread.h>
 #include <stdint.h>
@@ -219,6 +221,27 @@ static int check_and_set_gapless_mode(struct audio_device *adev) {
     }
     return 0;
 }
+
+/* Added by SDhi :Start: */
+#ifdef PHICOMM_C230WXX_AUDIO
+int codec_earpiece_onoff(char onoff) {
+    FILE *fptr;
+    char eponoff[1];
+    eponoff[0] = onoff;
+
+    fptr = fopen("sys/rs_ctl/controls_attr", "w");
+    if(fptr == NULL) {
+        ALOGE("Cannot open file sys/rs_ctl/controls_attr");
+        return -EINVAL;
+    }
+    
+    fwrite(eponoff, sizeof(eponoff), 1, fptr);
+    fclose(fptr);
+    
+    return 0;
+}
+#endif
+/* Added by SDhi :End: */
 
 static bool is_supported_format(audio_format_t format)
 {
@@ -770,6 +793,15 @@ int select_devices(struct audio_device *adev, audio_usecase_t uc_id)
     ALOGD("%s: out_snd_device(%d: %s) in_snd_device(%d: %s)", __func__,
           out_snd_device, platform_get_snd_device_name(out_snd_device),
           in_snd_device,  platform_get_snd_device_name(in_snd_device));
+
+#ifdef PHICOMM_C230WXX_AUDIO
+    if (out_snd_device == 6) {
+        codec_earpiece_onoff(1);
+        ALOGD("Audio Codec: Earpiece enabled");
+    } else {
+        codec_earpiece_onoff(0);
+    }
+#endif
 
     /*
      * Limitation: While in call, to do a device switch we need to disable

@@ -39,6 +39,10 @@ ifneq ($(filter msm8916,$(TARGET_BOARD_PLATFORM)),)
   LOCAL_CFLAGS := -DPLATFORM_MSM8916
 endif
 
+ifeq ($(BOARD_PHICOMM_C230WXX_CODEC),true)
+  LOCAL_CFLAGS += -DPHICOMM_C230WXX_AUDIO
+endif
+
 LOCAL_SRC_FILES := \
 	audio_hw.c \
 	voice.c \
