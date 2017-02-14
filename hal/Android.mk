@@ -23,6 +23,10 @@ ifneq ($(filter apq8084,$(TARGET_BOARD_PLATFORM)),)
 endif
 endif
 
+ifeq ($(BOARD_PHICOMM_C230WXX_AUDIO_CODEC),true)
+  LOCAL_CFLAGS += -DPHICOMM_C230WXX_AUDIO
+endif
+
 LOCAL_SRC_FILES := \
 	audio_hw.c \
 	voice.c \
